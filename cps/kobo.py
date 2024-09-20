@@ -230,6 +230,7 @@ def HandleSyncRequest():
         if ts_created > sync_token.books_last_created:
             sync_results.append({"NewEntitlement": entitlement})
         else:
+            log.info(f"changed entitlement: {entitlement}")
             sync_results.append({"ChangedEntitlement": entitlement})
         new_books_last_modified = max(
             book.Books.last_modified.replace(tzinfo=None), new_books_last_modified

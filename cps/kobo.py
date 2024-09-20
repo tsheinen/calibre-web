@@ -245,6 +245,10 @@ def HandleSyncRequest():
         new_books_last_created = max(ts_created, new_books_last_created)
         kobo_sync_status.add_synced_books(book.Books.id)
 
+
+    log.info(f"SyncToken.books_last_modified = {books_last_modified}")
+    log.info(f"changed metadata: {calibre_db.session.query(db.Books).filter(db.Books.last_modified > sync_token.books_last_modified).all()}")
+
     max_change = changed_entries.filter(ub.ArchivedBook.is_archived)\
         .filter(ub.ArchivedBook.user_id == current_user.id) \
         .order_by(func.datetime(ub.ArchivedBook.last_modified).desc()).first()

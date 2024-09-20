@@ -205,6 +205,7 @@ def HandleSyncRequest():
     books = changed_entries.limit(SYNC_ITEM_LIMIT)
     log.debug("Books to Sync: {}".format(len(books.all())))
     for book in books:
+        log.info(f"book sync: {book}")
         formats = [data.format for data in book.Books.data]
         if 'KEPUB' not in formats and config.config_kepubifypath and 'EPUB' in formats:
             helper.convert_book_format(book.Books.id, config.get_book_path(), 'EPUB', 'KEPUB', current_user.name)
@@ -249,9 +250,9 @@ def HandleSyncRequest():
     log.info(f"SyncToken.books_last_modified = {sync_token.books_last_modified}")
     log.info(f"SyncToken.books_last_created = {sync_token.books_last_created}")
     for book in calibre_db.session.query(db.Books).filter(db.Books.last_modified > sync_token.books_last_modified).all():
-        log.info(f"changed metadata for book: {book.title}, {book.last_modified}")
+        log.info(f"changed metadata for book: {book.title}, {book.last_modified}, {get_metadata(book)}")
         sync_results.append({"ChangedProductMetadata": get_metadata(book)}) # yeehaw
-
+    
     max_change = changed_entries.filter(ub.ArchivedBook.is_archived)\
         .filter(ub.ArchivedBook.user_id == current_user.id) \
         .order_by(func.datetime(ub.ArchivedBook.last_modified).desc()).first()

@@ -249,7 +249,7 @@ def HandleSyncRequest():
     log.info(f"SyncToken.books_last_created = {sync_token.books_last_created}")
     for book in calibre_db.session.query(db.Books).filter(db.Books.last_modified > sync_token.books_last_modified).all():
         log.info(f"changed metadata for book: {book.title}, {book.last_modified}")
-        sync_results.append({"ChangedProductMetadata": get_metadata(book.Books)}) # yeehaw
+        sync_results.append({"ChangedProductMetadata": get_metadata(book)}) # yeehaw
 
     max_change = changed_entries.filter(ub.ArchivedBook.is_archived)\
         .filter(ub.ArchivedBook.user_id == current_user.id) \

@@ -232,7 +232,7 @@ def HandleSyncRequest():
             sync_results.append({"NewEntitlement": entitlement})
         else:
             log.info(f"changed entitlement: {entitlement}")
-            sync_results.append({"ChangedEntitlement": entitlement})
+            sync_results.append({"NewEntitlement": entitlement})
         sync_results.append({"ChangedProductMetadata": get_metadata(book.Books)}) # yeehaw
         new_books_last_modified = max(
             book.Books.last_modified.replace(tzinfo=None), new_books_last_modified

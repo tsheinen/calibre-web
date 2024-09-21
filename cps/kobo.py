@@ -1126,6 +1126,12 @@ def HandleInitRequest():
 def download_book(book_id, book_format):
     return get_download_link(book_id, book_format, "kobo")
 
+@csrf.exempt
+@kobo.route("/v1/resync/<book_id>", methods=["POST"])
+@requires_kobo_auth
+def resync_kobo(book_id):
+    kobo_sync_status.remove_synced_book(book_id)
+    return f"removed synced book {book_id}"
 
 def NATIVE_KOBO_RESOURCES():
     return {

@@ -753,9 +753,11 @@ def get_book_cover_with_uuid(book_uuid, resolution=None):
 def get_deterministic_book_cover_uuid(book_uuid):
     book = calibre_db.get_book_by_uuid(book_uuid)
     cover_path = os.path.join(config.get_book_path(), book.path, "cover.jpg")
-    with open(cover_path, "rb") as f:
-        data = f.read()
-    return data
+    if os.path.exists(cover_path):
+        with open(cover_path, "rb") as f:
+            data = f.read()
+        return data
+    return book_uuid
 
 def get_book_cover_internal(book, resolution=None):
     if book and book.has_cover:

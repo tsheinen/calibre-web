@@ -463,10 +463,12 @@ def get_metadata(book):
                 log.error(e)
 
     book_uuid = book.uuid
+    cover_uuid = helper.get_deterministic_book_cover_uuid(book_uuid)
+
     metadata = {
         "Categories": ["00000000-0000-0000-0000-000000000001", ],
         # "Contributors": get_author(book),
-        "CoverImageId": book_uuid,
+        "CoverImageId": cover_uuid,
         "CrossRevisionId": book_uuid,
         "CurrentDisplayPrice": {"CurrencyCode": "USD", "TotalAmount": 0},
         "CurrentLoveDisplayPrice": {"TotalAmount": 0},

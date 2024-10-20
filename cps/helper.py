@@ -742,30 +742,26 @@ def get_book_cover(book_id, resolution=None):
 
 
 def get_book_cover_with_uuid(uuid, resolution=None):
-    mapped_cover = ub.session.query(ub.KoboCoverMapping).filter(ub.KoboCoverMapping.cover_uuid == uuid).first()
-    if mapped_cover:
-        uuid = mapped_cover.book_uuid
-    book = calibre_db.get_book_by_uuid(uuid)
+    from struct import unpack
+    from uuid import UUID
+    id = unpack(">i", UUID(uuid).bytes[:4])[0]
+    book = calibre_db.get_book(id)
     if not book:
         return  # allows kobo.HandleCoverImageRequest to proxy request
     return get_book_cover_internal(book, resolution=resolution)
 
 def make_book_cover_uuid(book_uuid):
+    from struct import pack
+    from hashlib import md5
+    from uuid import UUID
     book = calibre_db.get_book_by_uuid(book_uuid)
     cover_path = os.path.join(config.get_book_path(), book.path, "cover.jpg") # is it always correct that cover.jpg
     if os.path.exists(cover_path):
         with open(cover_path, "rb") as f:
             data = f.read()
-        cover_uuid = str(uuid3(NAMESPACE_DNS, data))
-        is_present = ub.session.query(ub.KoboCoverMapping).filter(ub.KoboCoverMapping.book_uuid == book_uuid).filter(ub.KoboCoverMapping.cover_uuid == cover_uuid).count()
-        if not is_present:
-            cover_mapping = ub.KoboCoverMapping()
-            cover_mapping.book_uuid = book_uuid
-            cover_mapping.cover_uuid = cover_uuid
-            ub.session.add(cover_mapping)
-            ub.session_commit()
+        cover_uuid = str(UUID(bytes=pack(">i", book.id) + md5(data).digest()[:12]))
         return cover_uuid
-    return book_uuid
+    return str(UUID(bytes=pack(">i", book.id) + b"\x00" * 12))
 
 def get_book_cover_internal(book, resolution=None):
     if book and book.has_cover:

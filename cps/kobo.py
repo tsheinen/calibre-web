@@ -353,7 +353,7 @@ def get_download_url_for_book(book_id, book_format):
             host = request.host
 
         return "{url_scheme}://{url_base}:{url_port}/kobo/{auth_token}/download/{book_id}/{book_format}".format(
-            url_scheme=request.scheme,
+            url_scheme="https",
             url_base=host,
             url_port=config.config_external_port,
             auth_token=get_auth_token(),
@@ -1069,7 +1069,7 @@ def HandleInitRequest():
         else:
             host = request.host
         calibre_web_url = "{url_scheme}://{url_base}:{url_port}".format(
-            url_scheme=request.scheme,
+            url_scheme="https",
             url_base=host,
             url_port=config.config_external_port
         )
